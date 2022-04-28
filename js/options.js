@@ -1,162 +1,160 @@
-//////////////////////初始化//////////////////////
-var Ext = new Array();
-Ext = JSON.parse(localStorage['Ext']);
-for(var i = 0; i < Ext.length; i++){
-    $('#ExtTd').append(GethtmlExt(Ext[i].ext,Ext[i].size));
-}
-
-var Type = new Array();
-Type = JSON.parse(localStorage['Type']);
-for(var i = 0; i < Type.length; i++){
-    $('#ExtTy').append(GethtmlType(Type[i].Type));
-}
-
-if(localStorage['repeat'] == "true"){
-    $('#repeat').attr("checked","checked");
-}
-
-$('#repeatReg').val(localStorage['repeatReg']);
-
-if(localStorage['Debug'] == "true"){
+chrome.storage.local.get(['xDebug'], function(data) {
+  if(data.xDebug) {
     $('#Debug').attr("checked","checked");
-}
+  }
+});
 
-if(localStorage['TitleName'] == "true"){
+$('#Debug').bind("click", function() {
+  if(!$(this).prop("checked")) {
+    $('#Debug').removeAttr("checked");
+    chrome.storage.local.set({"xDebug": false});
+  } else {
+    $('#Debug').attr("checked", "true");
+    chrome.storage.local.set({"xDebug": true});
+  }
+});
+
+chrome.storage.local.get(['xRepeat'], function(data) {
+  if(data.xRepeat) {
+    $('#repeat').attr("checked", "checked");
+  }
+});
+
+// 去除重复选项
+$('#repeat').bind("click", function() {
+  if(!$(this).prop("checked")) {
+    $('#repeat').removeAttr("checked");
+    chrome.storage.local.set({"xRepeat": false});
+  } else {
+    $('#repeat').attr("checked","true");
+    chrome.storage.local.set({"xRepeat": true});
+  }
+});
+
+chrome.storage.local.get(['xFileName'], function(data) {
+  if(data.xFileName) {
     $('#TitleName').attr("checked","checked");
-}
-
-/////////////////////事件绑定/////////////////////
-//新增格式
-$('#AddExt').bind("click", function(){
-    $('#ExtTd').append(GethtmlExt());
-    
-    //删除
-    $('#RemoveExt*').bind("click", function(){
-        $(this).parent().remove();
-    });
+  }
 });
 
-//新增MIME类型
-$('#AddType').bind("click", function(){
-    $('#ExtTy').append(GethtmlType());
-    
-    //删除
-    $('#RemoveType*').bind("click", function(){
-        $(this).parent().remove();
-    });
+// 使用网页标题做文件名
+$('#TitleName').bind("click", function() {
+  if(!$(this).prop("checked")){
+    $('#TitleName').removeAttr("checked");
+    chrome.storage.local.set({"xFileName": false});
+  } else {
+    $('#TitleName').attr("checked","true");
+    chrome.storage.local.set({"xFileName": true});
+  }
 });
 
-//获得html_格式
-function GethtmlExt(){
-    var ext = arguments[0] ? arguments[0]: '';
-    var size = arguments[1] ? arguments[1]: '0';
-    return '<tr><td><input type="text" class="ext" placeholder="扩展名" value="'+ext+'"></td><td class="TdSize"><input type="text" class="size" placeholder="大小限制" value="'+size+'"></td><td class="SizeButton">kb</td><td id="RemoveExt" class="RemoveButton">X</td></tr>';
-}
+chrome.storage.local.get(['xExt'], function(data) {
+  for(let i = 0; i < data.xExt.length; i++){
+    $('#ExtTd').append(GethtmlExt(data.xExt[i].ext, data.xExt[i].size));
+  }
+});
 
-//获得html_Type
-function GethtmlType(){
-    var Type = arguments[0] ? arguments[0]: '';
-    return '<tr><td><input type="text" class="Type" placeholder="MIME类型" value="'+Type+'"></td><td id="RemoveType" class="RemoveButton">X</td></tr>';
-}
+chrome.storage.local.get(['xMimeType'], function(data) {
+  for(let i = 0; i < data.xMimeType.length; i++){
+    $('#ExtTy').append(GethtmlType(data.xMimeType[i].Type));
+  }
+});
 
-//提示
-function Prompt(str,sec){
-    $('#TempntcText').html(str);
-    $('.tempntc').fadeIn(500).delay(sec).fadeOut(500);
-}
+chrome.storage.local.get(['xRepeatReg'], function(data) {
+  $('#repeatReg').val(data.xRepeatReg);
+});
 
-//删除格式
-$('#RemoveExt*').bind("click", function(){
+// 新增格式
+$('#AddExt').bind("click", function() {
+  $('#ExtTd').append(GethtmlExt());
+  //删除
+  $('#RemoveExt*').bind("click", function() {
     $(this).parent().remove();
+  });
 });
 
-//删除类型
-$('#RemoveType*').bind("click", function(){
+// 新增MIME类型
+$('#AddType').bind("click", function() {
+  $('#ExtTy').append(GethtmlType());
+  //删除
+  $('#RemoveType*').bind("click", function() {
     $(this).parent().remove();
+  });
 });
 
+// 获得HTML格式
+function GethtmlExt() {
+  let ext = arguments[0] ? arguments[0]: '';
+  let size = arguments[1] ? arguments[1]: '0';
+  return '<tr><td><input type="text" class="ext" placeholder="扩展名" value="'
+    + ext + '"></td><td class="TdSize"><input type="text" class="size" placeholder="大小限制" value="'
+    + size + '"></td><td class="SizeButton">kb</td><td id="RemoveExt" class="RemoveButton">X</td></tr>';
+}
 
-//保存
-$('#SaveExt').bind("click", function(){
-    var Type = new Array();
-    var Ext = new Array();
-    var success = true;
-    $('#ExtTd tr').each(function(i){
-        Tempext = $(this).find('.ext').val();
-        if(Tempext == null || Tempext == undefined || Tempext == ''){
-            Prompt('扩展名为空',1000);
-            success = false;
-            return false;
-        }
-        
-        
-        Tempsize = $(this).find('.size').val();
-        if(Tempsize == null || Tempsize == undefined || Tempsize == ''){
-            Tempsize = 0;
-            $(this).find('.size').val('0');
-        }
-        Ext[i] = {"ext":Tempext,"size":Tempsize};
-    });
-    
-    $('#ExtTy tr').each(function(i){
-        Tempext = $(this).find('.Type').val();
-        if(Tempext == null || Tempext == undefined || Tempext == ''){
-            Prompt('MIME类型为空',1000);
-            success = false;
-            return false;
-        }
-        Type[i] = {"Type":Tempext};
-    });
-    
-    if(success){
-        //转为字符串储存
-        localStorage['Ext'] = JSON.stringify(Ext);
-        localStorage['Type'] = JSON.stringify(Type);
-        Prompt('已保存',1000);
+// 获得 HTML-TYPE
+function GethtmlType() {
+  let Type = arguments[0] ? arguments[0]: '';
+  return '<tr><td><input type="text" class="Type" placeholder="MIME类型" value="'
+    + Type + '"></td><td id="RemoveType" class="RemoveButton">X</td></tr>';
+}
+
+// 提示
+function Prompt(str,sec) {
+  $('#TempntcText').html(str);
+  $('.tempntc').fadeIn(500).delay(sec).fadeOut(500);
+}
+
+// 删除格式
+$('#RemoveExt*').bind("click", function() {
+  $(this).parent().remove();
+});
+
+// 删除类型
+$('#RemoveType*').bind("click", function() {
+  $(this).parent().remove();
+});
+
+// 保存
+$('#SaveExt').bind("click", function() {
+  let Type = new Array();
+  let Ext = new Array();
+  let success = true;
+  $('#ExtTd tr').each(function(i) {
+    let Tempext = $(this).find('.ext').val();
+    if(Tempext == null || Tempext == undefined || Tempext == '') {
+      Prompt('扩展名为空', 1000);
+      success = false;
+      return false;
     }
-    localStorage['repeatReg'] = $('#repeatReg').val();
-});
 
-//去除重复选项
-$('#repeat').bind("click", function(){
-    if(!$(this).prop("checked")){
-        $('#repeat').removeAttr("checked");
-        localStorage['repeat'] = false;
-    }else{
-        $('#repeat').attr("checked","true");
-        localStorage['repeat'] = true;
+    let Tempsize = $(this).find('.size').val();
+    if(Tempsize == null || Tempsize == undefined || Tempsize == '') {
+      Tempsize = 0;
+      $(this).find('.size').val('0');
     }
-});
+    Ext[i] = {"ext":Tempext, "size":Tempsize};
+  });
 
-//调试模式
-$('#Debug').bind("click", function(){
-    if(!$(this).prop("checked")){
-        $('#Debug').removeAttr("checked");
-        localStorage['Debug'] = false;
-    }else{
-        $('#Debug').attr("checked","true");
-        localStorage['Debug'] = true;
+  $('#ExtTy tr').each(function(i) {
+    let Tempext = $(this).find('.Type').val();
+    if(Tempext == null || Tempext == undefined || Tempext == '') {
+      Prompt('MIME类型为空', 1000);
+      success = false;
+      return false;
     }
+    Type[i] = {"Type": Tempext};
+  });
+
+  chrome.storage.local.set({"xRepeatReg": $('#repeatReg').val()});
+
+  if(success) {
+    chrome.storage.local.set({"xExt": Ext});
+    chrome.storage.local.set({"xMimeType": Type});
+    Prompt('已保存', 1000);
+  }
 });
 
-//使用网页标题做文件名
-$('#TitleName').bind("click", function(){
-    if(!$(this).prop("checked")){
-        $('#TitleName').removeAttr("checked");
-        localStorage['TitleName'] = false;
-    }else{
-        $('#TitleName').attr("checked","true");
-        localStorage['TitleName'] = true;
-    }
-});
-
-//重置
-$('#ResetExt').bind("click", function(){
-    delete localStorage['Ext'];
-    delete localStorage['repeatReg'];
-    delete localStorage['repeat'];
-    delete localStorage['Debug'];
-    delete localStorage['Type'];
-    delete localStorage['TitleName'];
-    location.reload();
+// 重置
+$('#ResetExt').bind("click", function() {
+  location.reload();
 });

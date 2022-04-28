@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="css/pop.css" media="all"/>
+  <script src="js/jquery.min.js"></script>
+  <title>蜘蛛|资源嗅探</title>
+</head>
+
+<body>
+<script type="module" src="js/xfinder.js"></script>
+
+<div id="tsb">
+  <lable>下载地址前缀: </lable> <input id="xprefix" type="text" value="http://43.129.176.64/player/key.php?url=29725/yousheng/科幻有声/末日轮盘/"/><br>
+  <lable>下载地址后缀: </lable> <input id="xsuffix" type="text" value=".mp3"/><br><br>
+
+  <lable>开始值: </lable> <input id="xstart" type="number" value="100"/><br>
+  <lable>步进值: </lable> <input id="xstep" type="number" value="1"/><br>
+  <lable>结束值: </lable> <input id="xend" type="number" value="105"/><br><br>
+
+  <lable>文件扩展名: </lable>  <input id="xfext" type="text" value="mp3"/><br><br>
+  <lable>每个请求超时时间(ms): </lable>  <input id="xtimeout" type="number" value="1000"/><br><br>
+
+  <button id="findResources" class="AddButton">资源解析</button>
+  <button id="showUrlsLists" class="AddButton">显示结果</button>
+</div>
+
+<div id="xmly">
+  <button id="xmlyShowData" class="AddButton">喜马拉雅</button>
+</div>
+
+<br><br>
+
+<div id="tempntc">没有抓到资源</div>
+<div id="medialist"></div>
+<div id="down">
+  <div id="DownFile">下载所选</div>
+  <div id="AllCopy">复制所选</div>
+  <div id="AllSelect">全选</div>
+  <div id="ReSelect">反选</div>
+</div>
+<div id="player">
+  <video autoplay controls width="100%"></video>
+  <input id="CloseBtn" type="button" value="关闭"/>
+</div>
+</body>
+
+</html>
