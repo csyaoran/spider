@@ -233,9 +233,9 @@ function findMedia(data) {
     mediaUrls[data.tabId].push(info);
     chrome.storage.local.set({"xMediaUrls": mediaUrls});
 
-    //console.log("Tab ID", data.tabId);
-    //console.log("Media Info", info);
-    //console.log("Media List", mediaUrls);
+    utils.consoleLog("Media Data", data);
+    utils.consoleLog("Media Info", info);
+    utils.consoleLog("Media List", mediaUrls);
 
     // 数字提示
     chrome.action.setBadgeText({
