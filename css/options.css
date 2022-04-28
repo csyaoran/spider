@@ -151,10 +151,6 @@ textarea#userDefinedLinkHintCss, textarea#keyMappings, textarea#searchEngines {
   white-space: nowrap;
 }
 
-input#repeatReg, input#nextPatterns {
-  width: 100%;
-}
-
 input#newTabUrl {
   width: 100%;
 }

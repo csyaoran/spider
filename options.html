@@ -1,25 +1,25 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
 <head>
-  <title>蜘蛛 设置</title>
   <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" href="css/options.css" media="all" />
   <script src="js/jquery.min.js"></script>
+  <title>设置 | 蜘蛛</title>
 </head>
 
 <body>
 <div id="wrapper">
-  <header>蜘蛛>设置</header>
+  <header>蜘蛛 > 设置</header>
   <table id="options">
   <tbody>
   <tr>
-    <td class="caption">自定义抓取后缀</td>
+    <td class="caption">资源嗅探列表</td>
     <td>
       <div class="help">
         <div class="example">
-          1. 扩展名不带 "."。<br><br>
-          2. 部分非媒体资源文件不会被抓取。<br><br>
-          3. 小于此大小的文件被过滤，忽略文件大小填0。
+          1. 扩展名不带 "."<br><br>
+          2. 部分非媒体资源文件不会被抓取<br><br>
+          3. 小于此大小的文件被过滤，忽略文件大小填0
         </div>
       </div>
 
@@ -32,10 +32,10 @@
               <td><span class="ExtText">大小限制</span></td>
             </tr>
             </tbody>
-            <tbody id="ExtTd"></tbody>
+            <tbody id="xExt"></tbody>
           </table>
         </div>
-        <button id="AddExt" class="AddButton">新增一个</button>
+        <button id="xExtAdd" class="AddButton">新增</button>
       </div>
     </td>
   </tr>
@@ -45,10 +45,10 @@
     <td>
       <div class="help">
         <div class="example">
-          1. 支持通配符，优先匹配扩展名。<br><br>
+          1. 支持通配符，优先匹配扩展名<br><br>
           2. 常用格式对照表 <a href="http://tool.oschina.net/commons" target="_blank">
              http://tool.oschina.net/commons</a><br><br>
-          3. 有些媒体文件使用非正常扩展名，需通过MIME判断。
+          3. 有些媒体文件使用非正常扩展名，需通过MIME判断
         </div>
       </div>
 
@@ -60,10 +60,10 @@
               <td><span class="ExtType">MIME类型</span></td>
             </tr>
             </tbody>
-            <tbody id="ExtTy"></tbody>
+            <tbody id="xMimeType"></tbody>
           </table>
         </div>
-        <button id="AddType" class="AddButton">新增一个</button>
+        <button id="xMimeTypeAdd" class="AddButton">新增</button>
       </div>
     </td>
   </tr>
@@ -73,12 +73,12 @@
     <td class="booleanOption">
       <div class="help">
         <div class="example">
-          1. 某些网站媒体资源自带参数。<br>
-          2. 勾选忽略参数过滤重复数据。
+          1. 某些网站媒体资源自带参数<br>
+          2. 勾选忽略参数过滤重复数据
         </div>
       </div>
 
-      <label><input id="repeat" type="checkbox">
+      <label><input id="xIgnArgs" type="checkbox">
         忽略参数(避免重复)
       </label>
     </td>
@@ -87,9 +87,9 @@
   <tr>
     <td class="caption"></td>
     <td>
-      <input id="repeatReg" type="text">
+      <input id="xIgnArgsReg" type="text">
       <div class="example info">
-        匹配视频参数的正则，用于去除参数。不了解正则请勿动，可使用重置还原。
+        匹配媒体资源 URL 参数的正则，用于去除参数
       </div>
     </td>
   </tr>
@@ -97,28 +97,28 @@
   <tr>
     <td class="caption"></td>
     <td class="booleanOption">
-      <label><input id="TitleName" type="checkbox">下载时使用网页标题做文件名</label>
+      <label><input id="xUseTitleName" type="checkbox">下载时使用网页标题做文件名</label>
     </td>
   </tr>
 
   <tr>
     <td class="caption"></td>
     <td class="booleanOption">
-      <label><input id="Debug" type="checkbox">调试模式</label>
+      <label><input id="xDebug" type="checkbox">调试模式</label>
     </td>
   </tr>
 
   </tbody>
   </table>
 
-  <button id="ResetExt" class="AddButton">重置设置</button>
-  <button id="SaveExt" class="AddButton">保存全部设置</button>
+  <button id="resetBtn" class="AddButton">重置设置</button>
+  <button id="saveBtn"  class="AddButton">保存设置</button>
   <br><br><br>
 </div>
 
 <div id="tempntc" class="tempntc">
   <div id="tempntcDia" class="tempntc">
-    <div id="TempntcText" class="tempntc">test</div>
+    <div id="promptMsg" class="tempntc">弹出提示消息</div>
   </div>
 </div>
 

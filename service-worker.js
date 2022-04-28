@@ -3,14 +3,6 @@ import "./js/init.js"
 import * as utils from "./js/utils.js"
 import * as config from "./js/config.js"
 
-chrome.storage.local.get(['xDebug'], function(data) {
-  if(data.xDebug) {
-    console.log("** 蜘蛛 | 调试模式 **");
-  } else {
-    console.log("** 蜘蛛 | 用户模式 **");
-  }
-});
-
 // 标签更新，清除该标签之前记录
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
   if(changeInfo.status === "loading") { // 在载入之前清除之前记录
@@ -191,18 +183,17 @@ function findMedia(data) {
 
   if(filter) {
     let url = data.url;
-    let dealurl = url;
+    let dealUrl = url;
 
     // 去除参数
-    let repRegObj = {};
-    chrome.storage.local.get(['xRepeatReg'], function(data) {
-      Object.assign(repRegObj, {data: data.xRepeatReg});
+    let ignArgsReg = {};
+    chrome.storage.local.get(['xIgnArgsReg'], function(data) {
+      Object.assign(ignArgsReg, {data: data.xIgnArgsReg});
     });
-    let repeatReg = new RegExp(repRegObj.data,'g');
-
-    chrome.storage.local.get(['xRepeat'], function(data) {
-      if(data.xRepeat) {
-        dealurl = dealurl.replace(repeatReg,"");
+    let ignUrlArgs = new RegExp(ignArgsReg.data, 'g');
+    chrome.storage.local.get(['xIgnArgs'], function(data) {
+      if(data.xIgnArgs) {
+        dealUrl = dealUrl.replace(ignUrlArgs, "");
       }
     });
 
@@ -218,13 +209,13 @@ function findMedia(data) {
     for(let j = 0; j<mediaUrls[data.tabId].length; j++) {
       let existUrl = mediaUrls[data.tabId][j].url;
       // 去除参数
-      chrome.storage.local.get(['xRepeat'], function(data) {
-        if(data.xRepeat) {
-          existUrl = existUrl.replace(repeatReg,"");
+      chrome.storage.local.get(['xIgnArgs'], function(data) {
+        if(data.xIgnArgs) {
+          existUrl = existUrl.replace(ignUrlArgs,"");
         }
       });
 
-      if(existUrl === dealurl)
+      if(existUrl === dealUrl)
         return; // 不重复记录
     }
 

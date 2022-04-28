@@ -32,14 +32,51 @@ chrome.storage.local.set({"xMimeType": [
   {"Type":"audio/*"}
 ]});
 
-//
-chrome.storage.local.set({"xRepeat": false});
+// 去除URL重复参数
+chrome.storage.local.set({"xIgnArgs": false});
 
-//
-chrome.storage.local.set({"xRepeatReg": "\\?[\\S]+"});
+// 去除URL重复参数正则表达式
+chrome.storage.local.set({"xIgnArgsReg": "\\?[\\S]+"});
 
 // 文件名 = 网页标题 + 扩展名
-chrome.storage.local.set({"xFileName": false});
+chrome.storage.local.set({"xUseTitleName": false});
+
+function isDebugMode(debug) {
+  if(debug) {
+    console.log("** 蜘蛛 | 调试模式 **");
+  } else {
+    console.log("** 蜘蛛 | 用户模式 **");
+  }
+}
+
+chrome.storage.local.get(['xDebug'], function(data) {
+  isDebugMode(data.xDebug);
+});
+
+chrome.storage.onChanged.addListener((changes, namespace) => {
+  for(let [key, { oldValue, newValue }] of Object.entries(changes)) {
+    //console.log(`Key "${key}" in namespace "${namespace}" changed.`);
+    //console.log(`Old value "${oldValue}", new value "${newValue}".`);
+    if(key === "xDebug") {
+      isDebugMode(newValue);
+    }
+    if(key === "xExt") {
+      console.log("媒体资源嗅探类型:", newValue);
+    }
+    if(key === "xMimeType") {
+      console.log("MIME类型匹配类型:", newValue);
+    }
+    if(key === "xIgnArgs") {
+      console.log("删除媒体资源自带参数:", newValue);
+    }
+    if(key === "xIgnArgsReg") {
+      console.log("删除媒体资源自带参数正则表达式:", newValue);
+    }
+    if(key === "xUseTitleName") {
+      console.log("下载时使用网页标题做文件名:", newValue);
+    }
+  }
+});
 
 chrome.storage.local.set({"xMediaUrls": {}});
 

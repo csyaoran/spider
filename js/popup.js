@@ -50,8 +50,8 @@ function AddMedia(data) {
   // 网页标题加扩展名作为文件名
   let isOK = {data: false};
   let SaveAsName = data.name;
-  chrome.storage.local.get(['xFileName'], function(data) {
-    Object.assign(isOK, {data: data.xFileName});
+  chrome.storage.local.get(['xUseTitleName'], function(data) {
+    Object.assign(isOK, {data: data.xUseTitleName});
   });
 
   if(isOK.data) {
