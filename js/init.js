@@ -1,5 +1,5 @@
 // 调试开关
-chrome.storage.local.set({"xDebug": false});
+chrome.storage.local.set({"xDebug": true});
 
 // 音视频扩展名
 chrome.storage.local.set({"xExt": [

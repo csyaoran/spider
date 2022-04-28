@@ -4,24 +4,44 @@ import * as config from "./config.js"
 $('#tsb').hide();
 $('#xmly').hide();
 
+const readBlobAsText = (blob, encoding) => {
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = event => {
+      resolve(fr.result);
+    };
+
+    fr.onerror = err => {
+      reject(err);
+    };
+
+    fr.readAsText(blob, encoding);
+  });
+}
+
 // 接收 service-worker.js 发送的消息
 //
 // - data  表示 chrome.tabs.sendMessage() 的第2个参数，即数据对象
 // - cbf   表示 chrome.tabs.sendMessage() 的第3个参数，即回调函数
 chrome.runtime.onMessage.addListener(function(data, _, cbf) {
   if(data.xid === config.webId.tsb) {
-    //$('#xprefix').attr('value', data.url);
-
     // fetch 获取 HTML 的 body
-    // https://stackoverflow.com/questions/38004048/get-and-fetch-getting-html-body
+    //
+    // 1. https://blog.ihanai.com/2019/03/fetch-parse-response-in-gbk.html
+    // 2. https://www.cnblogs.com/dongxixi/p/11005607.html
+    // 3. https://blog.csdn.net/weixin_39573598/article/details/117796310
+    // 4. https://stackoverflow.com/questions/38004048/get-and-fetch-getting-html-body
     fetch(data.url, { method: 'get' }).then(function(response) {
-      return response.text();
-    }).then(function(string) {
-      console.log('Body', string);
+      const contentType = response.headers.get('Content-Type');
+      if(contentType && contentType === "text/html") {
+        return response.blob().then(blob => readBlobAsText(blob, "gbk"));
+      }
+      return "";
+    }).then(function(html) {
+      console.log(html);
     }).catch(function(err) {
-      console.log('Fetch Error: ', err);
+      console.error('Fetch Error', err);
     });
-    // ----
     $('#tsb').show();
   }
   if(data.xid === config.webId.xmly) {
