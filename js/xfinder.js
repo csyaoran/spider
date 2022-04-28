@@ -38,7 +38,14 @@ chrome.runtime.onMessage.addListener(function(data, _, cbf) {
       }
       return "";
     }).then(function(html) {
-      console.log(html);
+      try {
+        let book = document.createElement( 'html' );
+        book.innerHTML = html;
+        console.log(book);
+      } catch(error) {
+        console.log(error);
+      }
+
     }).catch(function(err) {
       console.error('Fetch Error', err);
     });
