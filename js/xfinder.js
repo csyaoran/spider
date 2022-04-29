@@ -1,7 +1,7 @@
 import * as utils from "./utils.js"
 import * as config from "./config.js"
 
-import * as tsb from "./tsb.js";
+import * as tsb from "./xfinder/tsb.js";
 
 $('#tsb').hide();
 $('#xmly').hide();

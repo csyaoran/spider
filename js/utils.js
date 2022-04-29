@@ -73,7 +73,7 @@ export function sleep(ms) {
 const META_CHARS = ['$', '^', '[', ']', '(', ')', '{', '}', '|', '+', '.', '\\'];
 function metaSearch(ch) {
   for(let metaCh in META_CHARS) {
-    if(ch == metaCh ) {
+    if(ch == metaCh) {
       return true;
     }
   }
