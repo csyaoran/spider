@@ -98,7 +98,15 @@ function findMedia(data) {
   });
 
   //console.log(" Normal", data);
-  if(data.initiator === config.webId.tsb) {
+  let isTsbCache = false;
+  if(data.fromCache) {
+    let xre= new RegExp("^http://m\.tingshubao\.com/book/[0-9]+\.html$");
+    if(xre.test(data.url)) {
+      isTsbCache = true;
+    }
+  }
+
+  if(data.initiator === config.webId.tsb || isTsbCache) {
     if(data.type === "main_frame") {
       utils.consoleLog("听书宝 Book 列表", data);
 
@@ -109,7 +117,7 @@ function findMedia(data) {
       //
       // JS 正则表达式
       // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Regular_Expressions
-      var xre= new RegExp("^http://m\.tingshubao\.com/book/[0-9]+\.html$");
+      let xre= new RegExp("^http://m\.tingshubao\.com/book/[0-9]+\.html$");
       if(!xre.test(data.url)) {
         return; // 检测失败
       }
