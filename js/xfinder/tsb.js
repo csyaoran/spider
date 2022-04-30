@@ -1,4 +1,5 @@
 import * as xchar from "./xchar.js"
+import * as tools from "./tools.js"
 
 const readBlobAsText = (blob, encoding) => {
   return new Promise((resolve, reject) => {
@@ -15,6 +16,8 @@ const readBlobAsText = (blob, encoding) => {
   });
 }
 
+// 解析听书宝网站播放页面获取，分析其 player/main.js 脚本
+const keyPhpUrl = "http://43.129.176.64/player/key.php?url=";
 function tsbJieMa(data) {
   let str = '';
   let tmp = data.split("*");
@@ -23,7 +26,6 @@ function tsbJieMa(data) {
   }
   return str;
 }
-
 
 function findMedia(info) {
   console.log("听书宝-资源解析");
@@ -54,6 +56,11 @@ function findMedia(info) {
       }
       return "";
     }).then(function(html) {
+      if(!html) {
+        console.error("获取听书宝播放页面数据失败");
+        return;
+      }
+
       let regex = /FonHen_JieMa\('([0-9\*\-]+)'\)\.split\('&'\)/;
       let magic = html.match(regex);
       let xpath = '';
@@ -64,12 +71,33 @@ function findMedia(info) {
         }
       }
       //console.log(chapterName, xpath);
-      let fileName = '';
-      if(xpath) {
-        let tmp = xpath.split('/');
-        fileName = tmp[tmp.length-1];
+      if(!xpath) {
+        console.error("解析听书宝播放页面URL路径失败");
+        return;
       }
-      console.log(chapterName, fileName, xpath);
+
+      let fileName = xpath.split('/');
+      fileName = fileName[fileName.length-1];
+      let jsonUrl = keyPhpUrl + xpath;
+      //console.log(chapterName, fileName, jsonUrl);
+
+      // 获取音频资源地址
+      fetch(jsonUrl, { method: 'get' }).then(function(responseJSON) {
+        if(responseJSON.status == 200) {
+          return responseJSON.text();
+        }
+      }).then(function(text) {
+        let mediaUrl = decodeURIComponent(JSON.parse(text).url);
+        if(!mediaUrl) {
+          console.error(chapterName + "播放URL获取失败", jsonUrl);
+          return;
+        }
+        tools.addMedia({
+          idx: tools.makeChapterIdx(i+1, info.media.length),
+          name: [ chapterName, fileName],
+          url: mediaUrl
+        });
+      });
     }).catch(function(err) {
       console.error('TSB Media Fetch Error', err);
     });
