@@ -15,32 +15,84 @@ const readBlobAsText = (blob, encoding) => {
   });
 }
 
+function tsbJieMa(data) {
+  let str = '';
+  let tmp = data.split("*");
+  for(let i=1; i<tmp.length; i++) {
+    str += String.fromCharCode(tmp[i]);
+  }
+  return str;
+}
+
+
 function findMedia(info) {
   console.log("听书宝-资源解析");
-  console.log(info);
+  let chapterStart = parseInt($('#chapterStart').val());
+  let chapterEnd = parseInt($('#chapterEnd').val());
+  if(chapterStart < 1) {
+    chapterStart = 1;
+  }
+  if(chapterEnd > info.media.length) {
+    chapterEnd = info.media.length;
+  }
+  //console.log(info.baseUrl);
+  for(let i=chapterStart-1; i<chapterEnd; i++) {
+    let chapterName = info.media[i].chapter;
+    chapterName = chapterName.replace(/'/g, "");
+    let chapterUrl = info.baseUrl + info.media[i].url;
+    chapterUrl = chapterUrl.replace(/'/g, "");
+    //console.log(chapterName, chapterUrl);
+    fetch(chapterUrl, { method: 'get' }).then(function(response) {
+      // HTTP 状态码
+      // https://www.runoob.com/http/http-status-codes.html
+      if(response.status == 200) {
+        return response.text();
+        //const contentType = response.headers.get('Content-Type');
+        //if(contentType && contentType === "text/html") {
+        //  return response.blob().then(blob => readBlobAsText(blob, "gbk"));
+        //}
+      }
+      return "";
+    }).then(function(html) {
+      let regex = /FonHen_JieMa\('([0-9\*\-]+)'\)\.split\('&'\)/;
+      let magic = html.match(regex);
+      let xpath = '';
+      if(magic && magic.length == 2) {
+        let tmp = tsbJieMa(magic[1]).split('&');
+        if(tmp.length == 3 && tmp[2] == "tc") {
+          xpath = tmp[0];
+        }
+      }
+      //console.log(chapterName, xpath);
+      let fileName = '';
+      if(xpath) {
+        let tmp = xpath.split('/');
+        fileName = tmp[tmp.length-1];
+      }
+      console.log(chapterName, fileName, xpath);
+    }).catch(function(err) {
+      console.error('TSB Media Fetch Error', err);
+    });
+  }
 }
 
 function initHtml(bookInfo) {
   if(!bookInfo || bookInfo.media.length == 0) {
     return {ok: false};
   }
-  let item = document.getElementById("tsbBookName");
+  let item = document.getElementById("bookName");
   item.innerHTML = bookInfo.title;
 
-  item = document.getElementById("tsbChapterStart");
-  item.value = 0;
+  item = document.getElementById("chapterStart");
+  item.value = 1;
 
-  item = document.getElementById("tsbChapterEnd");
+  item = document.getElementById("chapterEnd");
   item.value = bookInfo.media.length;
 
-  // <li><a title="第1集" href="/video/?350-0-0.html" target="_blank">第1集</a></li>
   $('#tsbFindResou').bind("click", function() {
     findMedia(bookInfo);
   });
-  $('#tsbShowMedia').bind("click", function() {
-    console.log("听书宝-显示结果");
-  });
-  return {ok: true, media: bookInfo.media, base: bookInfo.baseUrl};
+  return {ok: true};
 }
 
 // 获取/解析 HTML-BODY
@@ -50,9 +102,11 @@ export const mediaParser = (bookUrl, showHtml) => {
   // 3. https://blog.csdn.net/weixin_39573598/article/details/117796310
   // 4. https://stackoverflow.com/questions/38004048/get-and-fetch-getting-html-body
   fetch(bookUrl, { method: 'get' }).then(function(response) {
-    const contentType = response.headers.get('Content-Type');
-    if(contentType && contentType === "text/html") {
-      return response.blob().then(blob => readBlobAsText(blob, "gbk"));
+    if(response.status == 200) {
+      const contentType = response.headers.get('Content-Type');
+      if(contentType && contentType === "text/html") {
+        return response.blob().then(blob => readBlobAsText(blob, "gbk"));
+      }
     }
     return "";
   }).then(function(html) {
@@ -101,6 +155,6 @@ export const mediaParser = (bookUrl, showHtml) => {
       }
     }
   }).catch(function(err) {
-    console.error('TSB Media Fetch Error', err);
+    console.error('TSB Book List Fetch Error', err);
   });
 }

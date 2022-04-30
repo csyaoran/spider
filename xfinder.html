@@ -13,16 +13,26 @@
   <!-- 小说信息及用户设置 -->
   <div class="book">
     <div class="book-cell">
-      <!-- 听书宝 -->
-      <div id="tsb">
-        <h1 id="tsbBookName" class="book-title"></h1>
+      <!-- 显示支持解析的网站 -->
+      <div id="showNote">
+        <lable><a href="http://m.tingshubao.com">听书宝</a></lable>
+        <lable><a href="https://www.ximalaya.com">喜马拉雅</a></lable>
+        <lable><a href="https://m.ysts8.net/">有声听书吧</a></lable>
+      </div>
+      <div id="showBook">
+        <h1 id="bookName" class="book-title"></h1>
         <div class="book-rand-a"><a>开始章节:</a>
-          <input id="tsbChapterStart" type="number"/>
+          <input id="chapterStart" type="number"/>
         </div>
         <div class="book-rand-a"><a>结束章节:</a>
-          <input id="tsbChapterEnd" type="number"/>
+          <input id="chapterEnd" type="number"/>
         </div>
-        <button id="tsbShowMedia" class="add-button">显示结果</button>
+        <button id="clearData" class="add-button">清空列表</button>
+        <button id="downloadMedia" class="add-button">全部下载</button>
+      </div>
+
+      <!-- 听书宝 -->
+      <div id="tsb">
         <button id="tsbFindResou" class="add-button">资源解析</button>
       </div>
       <!-- 有声听书吧 -->
@@ -32,12 +42,6 @@
       <!-- 喜马拉雅 -->
       <div id="xmly">
 
-      </div>
-      <!-- 显示支持解析的网站 -->
-      <div id="showNote">
-        <lable><a href="http://m.tingshubao.com">听书宝</a></lable>
-        <lable><a href="https://www.ximalaya.com">喜马拉雅</a></lable>
-        <lable><a href="https://m.ysts8.net/">有声听书吧</a></lable>
       </div>
     </div>
   </div>

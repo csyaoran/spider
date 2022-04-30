@@ -1,4 +1,4 @@
-export function consoleLog(label=null, msg=null) {
+export function consoleLog(label="", msg="") {
   // 参考 https://stackoverflow.com/a/27074218/470749
   let err = new Error();
   let stack = err.stack.toString().split(/\r\n|\n/);
@@ -21,7 +21,7 @@ export function consoleLog(label=null, msg=null) {
   chrome.storage.local.get(['xDebug'], function(data) {
     if(data.xDebug) {
       console.log("-------- " + label + " --------");
-      console.log(msg);
+      if(msg) console.log(msg);
       console.log(infomsg);
     }
   });

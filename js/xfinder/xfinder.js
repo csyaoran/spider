@@ -6,35 +6,48 @@ import * as tsb from "./tsb.js";
 $('#tsb').hide();
 $('#xmly').hide();
 $('#ysts8').hide();
+$('#showBook').hide();
 $('#showNote').show();
 
+function showNote() {
+  $('#tsb').hide();
+  $('#xmly').hide();
+  $('#ysts8').hide();
+  $('#showBook').hide();
+  $('#showNote').show();
+}
 function tsbShow(info) {
   if(!info.ok) {
+    showNote();
     return;
   }
-  console.log("xxxyyyzzz");
   $('#tsb').show();
   $('#xmly').hide();
   $('#ysts8').hide();
+  $('#showBook').show();
   $('#showNote').hide();
 }
 function xmlyShow(info) {
+  if(!info.ok) {
+    showNote();
+    return;
+  }
   $('#tsb').hide();
   $('#xmly').show();
   $('#ysts8').hide();
+  $('#showBook').show();
   $('#showNote').hide();
 }
 function ysts8Show(info) {
+  if(!info.ok) {
+    showNote();
+    return;
+  }
   $('#tsb').hide();
   $('#xmly').hide();
   $('#ysts8').show();
+  $('#showBook').show();
   $('#showNote').hide();
-}
-function showNote(info) {
-  $('#tsb').hide();
-  $('#xmly').hide();
-  $('#ysts8').hide();
-  $('#showNote').show();
 }
 
 // 接收 service-worker.js 发送的消息

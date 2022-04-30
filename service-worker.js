@@ -119,6 +119,7 @@ function findMedia(data) {
       // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Regular_Expressions
       let xre= new RegExp("^http://m\.tingshubao\.com/book/[0-9]+\.html$");
       if(!xre.test(data.url)) {
+        utils.consoleLog("SKIP 听书宝非有声书列表");
         return; // 检测失败
       }
 
