@@ -92,10 +92,17 @@ function findMedia(info) {
           console.error(chapterName + "播放URL获取失败", jsonUrl);
           return;
         }
+
+        let flag = false;
+        if(i == chapterStart-1) {
+          flag = true;
+        }
+
         tools.addMedia({
-          idx: tools.makeChapterIdx(i+1, info.media.length),
+          init: flag,
+          url: mediaUrl,
           name: [ chapterName, fileName],
-          url: mediaUrl
+          idx: tools.makeChapterIdx(i+1, info.media.length)
         });
       });
     }).catch(function(err) {

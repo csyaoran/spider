@@ -1,5 +1,3 @@
-import * as utils from "../utils.js"
-
 // idx 数字，当前章节索引号
 // max 数字，有声小说总共章节
 export function makeChapterIdx(idx, max) {
@@ -23,12 +21,20 @@ export function makeChapterIdx(idx, max) {
   }
 }
 
+// 构建资源列表
 export function addMedia(data) {
-  utils.consoleLog("Xfinder Add Media", data);
+  let mediaList = JSON.parse(localStorage['MediaList']);
+  if(data.init) { // 清空列表
+    mediaList = [];
+  }
 
-  // 资源列表
-  let html = '<li><a title="' + data.name[0] + '" href="'
-    + data.url + '">' + data.name[0] + '</a></li>';
+  let tmp = {};
+  tmp[data.idx] = {
+    url: data.url,
+    cName: data.name[0],
+    fName: data.name[1]
+  };
 
-  $('#medialist').append(html);
+  mediaList.push(tmp);
+  localStorage['MediaList'] = JSON.stringify(mediaList);
 }

@@ -63,3 +63,14 @@ chrome.runtime.onMessage.addListener(function(data, _, cbf) {
   }
   cbf("ok");
 });
+
+// 音频/视频文件解析结果
+if(typeof localStorage['MediaList'] === 'undefined') {
+  localStorage['MediaList'] = JSON.stringify([]);
+}
+
+$('#showMedia').bind("click", function() {
+  console.log("听书宝-显示结果");
+  let mediaList = JSON.parse(localStorage['MediaList']);
+  utils.consoleLog("媒体资源列表", mediaList);
+});
