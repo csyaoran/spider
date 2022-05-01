@@ -23,7 +23,7 @@ export function makeChapterIdx(idx, max) {
 
 // 构建资源列表
 export function addMedia(data) {
-  let mediaList = JSON.parse(localStorage['MediaList']);
+  let mediaList = JSON.parse(localStorage['xMediaList']);
   if(data.init) { // 清空列表
     mediaList = [];
   }
@@ -36,5 +36,5 @@ export function addMedia(data) {
   };
 
   mediaList.push(tmp);
-  localStorage['MediaList'] = JSON.stringify(mediaList);
+  localStorage['xMediaList'] = JSON.stringify(mediaList);
 }

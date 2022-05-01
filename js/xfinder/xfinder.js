@@ -1,6 +1,4 @@
-import * as utils from "../utils.js"
 import * as config from "../config.js"
-
 import * as tsb from "./tsb.js";
 
 $('#tsb').hide();
@@ -64,13 +62,32 @@ chrome.runtime.onMessage.addListener(function(data, _, cbf) {
   cbf("ok");
 });
 
-// 音频/视频文件解析结果
-if(typeof localStorage['MediaList'] === 'undefined') {
-  localStorage['MediaList'] = JSON.stringify([]);
+// window.localStorage vs chrome.storage.local
+// https://stackoverflow.com/questions/24279495/window-localstorage-vs-chrome-storage-local
+// localStorage 的读写必须放在被网页加载的JS脚本内，否则报错！
+// localStorage 可以通过 Chrome 的 DevTools->Application 查看其内容
+if(0) {
+  // 第1种写法
+  localStorage['WHAT1'] = JSON.stringify({"a":{},"b":{},"c":{}});
+  let WHAT1 = JSON.parse(localStorage['WHAT1']);
+  console.log(WHAT1);
+  // 第2种写法
+  localStorage.setItem("WHAT2", JSON.stringify(["a","b","c"]));
+  let WHAT2 = JSON.parse(localStorage.getItem("WHAT2"));
+  console.log(WHAT2);
+  // 第3种写法
+  window.localStorage.setItem("WHAT3", JSON.stringify({debug: true}));
+  let WHAT3 = JSON.parse(window.localStorage.getItem("WHAT3"));
+  console.log(WHAT3);
+}
+
+// xfinder 音频/视频文件解析结果
+if(typeof localStorage['xMediaList'] === 'undefined') {
+  localStorage['xMediaList'] = JSON.stringify([]);
 }
 
 $('#showMedia').bind("click", function() {
   console.log("听书宝-显示结果");
-  let mediaList = JSON.parse(localStorage['MediaList']);
-  utils.consoleLog("媒体资源列表", mediaList);
+  let mediaList = JSON.parse(localStorage['xMediaList']);
+  config.debugMsg("媒体资源列表", mediaList);
 });

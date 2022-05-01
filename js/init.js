@@ -41,51 +41,6 @@ chrome.storage.local.set({"xIgnArgsReg": "\\?[\\S]+"});
 // 文件名 = 网页标题 + 扩展名
 chrome.storage.local.set({"xUseTitleName": false});
 
-function isDebugMode(debug) {
-  if(debug) {
-    console.log("** 蜘蛛 | 调试模式 **");
-  } else {
-    console.log("** 蜘蛛 | 用户模式 **");
-  }
-}
-
-chrome.storage.local.get(['xDebug'], function(data) {
-  isDebugMode(data.xDebug);
-});
-
-chrome.storage.onChanged.addListener((changes, namespace) => {
-  for(let [key, { oldValue, newValue }] of Object.entries(changes)) {
-    //console.log(`Key "${key}" in namespace "${namespace}" changed.`);
-    //console.log(`Old value "${oldValue}", new value "${newValue}".`);
-    if(key === "xDebug") {
-      isDebugMode(newValue);
-    }
-    if(key === "xExt") {
-      console.log("媒体资源嗅探类型:", newValue);
-    }
-    if(key === "xMimeType") {
-      console.log("MIME类型匹配类型:", newValue);
-    }
-    if(key === "xIgnArgs") {
-      console.log("删除媒体资源自带参数:", newValue);
-    }
-    if(key === "xIgnArgsReg") {
-      console.log("删除媒体资源自带参数正则表达式:", newValue);
-    }
-    if(key === "xUseTitleName") {
-      console.log("下载时使用网页标题做文件名:", newValue);
-    }
-  }
-});
-
-chrome.storage.local.set({"xMediaUrls": {}});
-
-// 音频网址 IDs
-chrome.storage.local.set({"xAppIds": {
-  "tsb": "http://m.tingshubao.com", // 听书宝
-  "xmly": "https://www.ximalaya.com" // 喜马拉雅
-}});
-
 chrome.runtime.onInstalled.addListener(() => {
   // 注册右键菜单
   chrome.contextMenus.create({

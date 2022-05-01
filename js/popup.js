@@ -1,11 +1,12 @@
-﻿import * as utils from "./utils.js"
+﻿import * as config from "./config.js"
 
 chrome.windows.getCurrent(function(wnd) {
   chrome.tabs.query({windowId: wnd.id}, function(tabs) {
     for(let i=0; i<tabs.length; i++) {
       if(tabs[i].active) {
-        chrome.storage.local.get(['xMediaUrls'], function(data) {
-          ShowMedia(data.xMediaUrls[tabs[i].id]);
+        // 发送消息给 ServiceWorker 请求当前 Tab 页面解析得到的音频/视频数据
+        chrome.runtime.sendMessage({xid: "popup",tid: tabs[i].id}, (data) => {
+          ShowMedia(data);
         });
       }
     }
@@ -40,7 +41,7 @@ function html5IsPlay(ext) {
 }
 
 function AddMedia(data) {
-  utils.consoleLog("Popup Media Data", data);
+  config.debugMsg("Popup Media Data", data);
 
   // 文件名是否为空
   if(data.name == undefined || data.name == '') {

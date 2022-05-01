@@ -3,28 +3,33 @@ import "./js/init.js"
 import * as utils from "./js/utils.js"
 import * as config from "./js/config.js"
 
-// 标签更新，清除该标签之前记录
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
-  if(changeInfo.status === "loading") { // 在载入之前清除之前记录
-    chrome.storage.local.get(['xMediaUrls'], function(data) {
-      // tabId 标签更新后，清空其附属资源列表
-      if(data.xMediaUrls[tabId]) {
-        data.xMediaUrls[tabId] = [];
-        chrome.storage.local.set({"xMediaUrls": data.xMediaUrls});
-      }
-    });
+// popup 音频/视频文件解析结果
+const xMediaInfo = {};
+
+// 发送媒体资源数据给 Popup
+chrome.runtime.onMessage.addListener(function(data, _, callback) {
+  if(data && data.xid == "popup") {
+    callback(xMediaInfo[data.tid]);
   }
 });
 
-// 标签关闭，清除该标签之前记录
-chrome.tabs.onRemoved.addListener(function(tabId) {
-  chrome.storage.local.get(['xMediaUrls'], function(data) {
-    // tabId 标签关闭后，删除其附属资源列表
-    if(data.xMediaUrls[tabId]) {
-      delete data.xMediaUrls[tabId];
-      chrome.storage.local.set({"xMediaUrls": data.xMediaUrls});
-    }
-  });
+// Chrome 插件 API 文档 360 版
+// https://open.chrome.360.cn/extension_dev/overview.html
+// Google Chrome 开发者文档仓库
+// https://github.com/GoogleChrome/developer.chrome.com
+
+// 标签更新，清空该标签之前记录的媒体资源
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
+  if(changeInfo.status === "loading") {
+    // tabId 标签更新后，重新加载前，清空其附属资源列表
+    xMediaInfo[tabId] = [];
+  }
+});
+
+// 标签关闭，清空该标签之前记录的媒体资源
+chrome.tabs.onRemoved.addListener(function(tabId, info) {
+  // tabId 标签关闭后，删除其附属资源列表
+  delete xMediaInfo[tabId];
 });
 
 // 资源嗅探页面ID
@@ -75,7 +80,7 @@ chrome.webRequest.onResponseStarted.addListener(
 // 开始判断
 function findMedia(data) {
   if(data.tabId == -1) {
-    utils.consoleLog("Not Tab ID", data);
+    config.debugMsg("Not Tab ID", data);
     return;
   }
 
@@ -108,7 +113,7 @@ function findMedia(data) {
 
   if(data.initiator === config.webId.tsb || isTsbCache) {
     if(data.type === "main_frame") {
-      utils.consoleLog("听书宝 Book 列表", data);
+      config.debugMsg("听书宝 Book 列表", data);
 
       // 检测当前页面是否是听书宝 BOOK 列表页面
       //
@@ -119,7 +124,7 @@ function findMedia(data) {
       // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Regular_Expressions
       let xre= new RegExp("^http://m\.tingshubao\.com/book/[0-9]+\.html$");
       if(!xre.test(data.url)) {
-        utils.consoleLog("SKIP 听书宝非有声书列表");
+        config.debugMsg("SKIP 听书宝非有声书列表");
         return; // 检测失败
       }
 
@@ -206,17 +211,12 @@ function findMedia(data) {
       }
     });
 
-    let mediaUrls = {};
-    chrome.storage.local.get(['xMediaUrls'], function(data) {
-      Object.assign(mediaUrls, data.xMediaUrls);
-    });
-
-    if(mediaUrls[data.tabId] === undefined) {
-      mediaUrls[data.tabId] = [];
+    if(xMediaInfo[data.tabId] === undefined) {
+      xMediaInfo[data.tabId] = [];
     }
 
-    for(let j = 0; j<mediaUrls[data.tabId].length; j++) {
-      let existUrl = mediaUrls[data.tabId][j].url;
+    for(let j=0; j<xMediaInfo[data.tabId].length; j++) {
+      let existUrl = xMediaInfo[data.tabId][j].url;
       // 去除参数
       chrome.storage.local.get(['xIgnArgs'], function(data) {
         if(data.xIgnArgs) {
@@ -239,22 +239,22 @@ function findMedia(data) {
       url: url
     };
 
-    mediaUrls[data.tabId].push(info);
-    chrome.storage.local.set({"xMediaUrls": mediaUrls});
+    xMediaInfo[data.tabId].push(info);
+    let pageMediaCnt = xMediaInfo[data.tabId].length.toString();
 
-    utils.consoleLog("Media Data", data);
-    utils.consoleLog("Media Info", info);
-    utils.consoleLog("Media List", mediaUrls);
+    config.debugMsg("Media Data", data);
+    config.debugMsg("Media Info", info);
+    config.debugMsg("Media List", xMediaInfo);
 
     // 数字提示
     chrome.action.setBadgeText({
       tabId: data.tabId,
-      text: mediaUrls[data.tabId].length.toString()
+      text: pageMediaCnt
     });
     // 鼠标悬停文字提示
     chrome.action.setTitle({
       tabId: data.tabId,
-      title: "抓到 " + mediaUrls[data.tabId].length.toString() + " 个媒体资源"
+      title: "抓到 " + pageMediaCnt + " 个媒体资源"
     });
   }
 }

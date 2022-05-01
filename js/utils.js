@@ -1,32 +1,3 @@
-export function consoleLog(label="", msg="") {
-  // 参考 https://stackoverflow.com/a/27074218/470749
-  let err = new Error();
-  let stack = err.stack.toString().split(/\r\n|\n/);
-
-  let infomsg = "";
-  let xprefix = "=>";
-  for(let i=2; i<stack.length; i++) {
-    if(infomsg === "") {
-      infomsg = xprefix + stack[i].replace(/^\s*|\s*$/g,"");
-    } else {
-      infomsg = infomsg + "\n" + xprefix + stack[i].replace(/^\s*|\s*$/g,"");
-    }
-    xprefix = "  " + xprefix;
-  }
-
-  if(label === '') {
-    label = '???';
-  }
-
-  chrome.storage.local.get(['xDebug'], function(data) {
-    if(data.xDebug) {
-      console.log("-------- " + label + " --------");
-      if(msg) console.log(msg);
-      console.log(infomsg);
-    }
-  });
-}
-
 export function skipChromeStuff(url) {
   // chrome://*
   // chrome-extension://*
